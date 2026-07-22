@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\WasteStatus;
 use App\Enums\WasteType;
-use DomainException;
 
 class WasteElectronic extends Waste
 {

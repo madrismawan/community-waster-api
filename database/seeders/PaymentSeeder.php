@@ -18,7 +18,7 @@ class PaymentSeeder extends Seeder
             throw new RuntimeException('At least one household is required to seed payments.');
         }
 
-        $households = $households->random(1)->values();
+        $households = $households->random(5)->values();
 
         $payments = [
             [

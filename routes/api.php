@@ -11,3 +11,11 @@ Route::prefix('households')->group(function () {
     Route::put('{id}', [HouseholdController::class, 'update']);
     Route::delete('{id}', [HouseholdController::class, 'destroy']);
 });
+
+Route::prefix('pickups')->group(function () {
+    Route::get('/', [PickupController::class, 'index']);
+    Route::post('/', [PickupController::class, 'store']);
+    Route::put('{id}/schedule', [PickupController::class, 'schedule']);
+    Route::put('{id}/complete', [PickupController::class, 'complete']);
+    Route::put('{id}/cancel', [PickupController::class, 'cancel']);
+});

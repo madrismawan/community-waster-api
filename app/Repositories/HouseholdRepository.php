@@ -18,7 +18,6 @@ class HouseholdRepository extends BaseRepository implements HouseholdRepositoryI
         parent::__construct($household);
     }
 
-    /** @return LengthAwarePaginator<int, Household> */
     public function paginateFiltered(
         int $perPage = 15,
         array $filters = [],
@@ -29,11 +28,6 @@ class HouseholdRepository extends BaseRepository implements HouseholdRepositoryI
             ->paginate($perPage, ['*'], 'page', $page);
     }
 
-    /**
-     * @param  Builder<Household>  $query
-     * @param  array<string, mixed>  $filters
-     * @return Builder<Household>
-     */
     private function applyFilters(Builder $query, array $filters): Builder
     {
         $search = trim((string) ($filters['search'] ?? ''));

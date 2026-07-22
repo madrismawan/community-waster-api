@@ -5,12 +5,11 @@ namespace App\Models;
 use App\Enums\WasteStatus;
 use App\Enums\WasteType;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MongoDB\Laravel\Eloquent\Casts\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 
-#[Fillable(['household_id', 'pickup_date', 'status', 'safety_check'])]
+#[Fillable(['household_id', 'type', 'pickup_date', 'status', 'safety_check'])]
 class Waste extends Model
 {
     protected $connection = 'mongodb';

@@ -19,7 +19,7 @@ class WasteSeeder extends Seeder
             throw new RuntimeException('At least one household is required to seed wastes.');
         }
 
-        $households = $households->random(1)->values();
+        $households = $households->random(5)->values();
 
         $wastes = [
             [
