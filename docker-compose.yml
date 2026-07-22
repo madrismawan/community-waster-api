@@ -21,12 +21,14 @@ services:
     container_name: community-waste-mongodb
     image: mongo:8
     restart: unless-stopped
+    ports:
+      - "${DB_PORT:-27017}:27017"
     env_file:
       - .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-community_waste}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: ${DB_DATABASE:-community_waste}
     volumes:
       - mongodb_data:/data/db
     healthcheck:
