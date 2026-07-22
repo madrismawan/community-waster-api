@@ -7,7 +7,6 @@ use App\Http\Requests\Household\IndexHouseholdRequest;
 use App\Http\Requests\Household\StoreHouseholdRequest;
 use App\Http\Requests\Household\UpdateHouseholdRequest;
 use App\Http\Resources\HouseholdResource;
-use App\Http\Responses\ApiResponse;
 use App\Services\HouseholdService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +20,7 @@ class HouseholdController extends Controller
     {
         $perPage = (int) $request->validated('per_page', 15);
 
-        return ApiResponse::success(
+        return $this->success(
             HouseholdResource::collection($this->households->paginate($perPage)),
             'Households retrieved successfully.',
         );
@@ -31,7 +30,7 @@ class HouseholdController extends Controller
     {
         $household = $this->households->create($request->validated());
 
-        return ApiResponse::success(
+        return $this->success(
             (new HouseholdResource($household))->resolve($request),
             'Household created successfully.',
             Response::HTTP_CREATED,
@@ -40,7 +39,7 @@ class HouseholdController extends Controller
 
     public function show(Request $request, string $household): JsonResponse
     {
-        return ApiResponse::success(
+        return $this->success(
             (new HouseholdResource($this->households->find($household)))->resolve($request),
             'Household retrieved successfully.',
         );
@@ -50,7 +49,7 @@ class HouseholdController extends Controller
     {
         $updatedHousehold = $this->households->update($household, $request->validated());
 
-        return ApiResponse::success(
+        return $this->success(
             (new HouseholdResource($updatedHousehold))->resolve($request),
             'Household updated successfully.',
         );
@@ -60,6 +59,6 @@ class HouseholdController extends Controller
     {
         $this->households->delete($household);
 
-        return ApiResponse::success(message: 'Household deleted successfully.');
+        return $this->success(message: 'Household deleted successfully.');
     }
 }

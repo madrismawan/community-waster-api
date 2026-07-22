@@ -1,18 +1,29 @@
 <?php
 
-namespace App\Http\Responses;
+namespace App\Support;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ApiResponse
+trait ApiResponse
 {
-    public static function success(
+    public function success(
         mixed $data = null,
         string $message = 'Request completed successfully.',
         int $status = Response::HTTP_OK,
         ?array $meta = null,
     ): JsonResponse {
+        if ($data instanceof AnonymousResourceCollection) {
+            $resource = $data->response()->getData(true);
+            $data = $resource['data'] ?? [];
+            $meta = array_merge($resource['meta'] ?? [], $meta ?? []);
+
+            if (isset($resource['links'])) {
+                $meta['navigation'] = $resource['links'];
+            }
+        }
+
         return response()->json([
             'success' => true,
             'message' => $message,
@@ -27,21 +38,19 @@ final class ApiResponse
      * @param  array<string, string>  $headers
      * @param  array<string, mixed>|null  $meta
      */
-    public static function error(
+    public function error(
         string $message,
         int $status,
         ?array $errors = null,
         array $headers = [],
         ?array $meta = null,
     ): JsonResponse {
-        $response = [
+        return response()->json([
             'success' => false,
             'message' => $message,
             'data' => (object) [],
             'meta' => $meta ?: (object) [],
             'errors' => $errors,
-        ];
-
-        return response()->json($response, $status, $headers);
+        ], $status, $headers);
     }
 }

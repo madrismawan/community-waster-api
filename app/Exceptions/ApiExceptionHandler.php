@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Http\Responses\ApiResponse;
+use App\Support\ApiResponse;
 use DomainException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -20,6 +20,8 @@ use Throwable;
 
 final class ApiExceptionHandler
 {
+    use ApiResponse;
+
     public static function register(Exceptions $exceptions): void
     {
         $handler = new self;
@@ -47,7 +49,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'The given data was invalid.',
                 status: Response::HTTP_UNPROCESSABLE_ENTITY,
                 errors: $exception->errors(),
@@ -62,7 +64,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: $exception->getMessage() ?: 'Unauthenticated.',
                 status: Response::HTTP_UNAUTHORIZED,
             );
@@ -76,7 +78,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: $exception->getMessage() ?: 'This action is unauthorized.',
                 status: Response::HTTP_FORBIDDEN,
             );
@@ -90,7 +92,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'Resource not found.',
                 status: Response::HTTP_NOT_FOUND,
             );
@@ -104,7 +106,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: $exception->getMessage() ?: 'Too many requests.',
                 status: Response::HTTP_TOO_MANY_REQUESTS,
                 headers: $exception->getHeaders(),
@@ -119,7 +121,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: $exception->getMessage() ?: 'The resource conflicts with existing data.',
                 status: Response::HTTP_CONFLICT,
                 headers: $exception->getHeaders(),
@@ -134,7 +136,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'A resource with the same unique values already exists.',
                 status: Response::HTTP_CONFLICT,
             );
@@ -148,7 +150,7 @@ final class ApiExceptionHandler
                 return null;
             }
 
-            return ApiResponse::error(
+            return $this->error(
                 message: $exception->getMessage(),
                 status: Response::HTTP_UNPROCESSABLE_ENTITY,
             );
@@ -164,7 +166,7 @@ final class ApiExceptionHandler
 
             $status = $exception->getStatusCode();
 
-            return ApiResponse::error(
+            return $this->error(
                 message: $exception->getMessage() ?: (Response::$statusTexts[$status] ?? 'Request failed.'),
                 status: $status,
                 headers: $exception->getHeaders(),
@@ -181,7 +183,7 @@ final class ApiExceptionHandler
 
             report($exception);
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'An unexpected error occurred.',
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
             );

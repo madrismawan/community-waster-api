@@ -4,8 +4,6 @@ namespace App\Repositories;
 
 use App\Contract\Repositories\HouseholdRepositoryInterface;
 use App\Models\Household;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class HouseholdRepository extends BaseRepository implements HouseholdRepositoryInterface
 {
