@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Http\Responses\ApiResponse;
+use DomainException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -33,6 +34,8 @@ final class ApiExceptionHandler
         $handler->handleNotFound($exceptions);
         $handler->handleTooManyRequests($exceptions);
         $handler->handleConflict($exceptions);
+        $handler->handleDuplicateKey($exceptions);
+        $handler->handleDomain($exceptions);
         $handler->handleHttpException($exceptions);
         $handler->handleUnexpected($exceptions);
     }
@@ -120,6 +123,34 @@ final class ApiExceptionHandler
                 message: $exception->getMessage() ?: 'The resource conflicts with existing data.',
                 status: Response::HTTP_CONFLICT,
                 headers: $exception->getHeaders(),
+            );
+        });
+    }
+
+    private function handleDuplicateKey(Exceptions $exceptions): void
+    {
+        $exceptions->render(function (BulkWriteException $exception, Request $request) {
+            if (! $this->isApiRequest($request) || $exception->getCode() !== 11000) {
+                return null;
+            }
+
+            return ApiResponse::error(
+                message: 'A resource with the same unique values already exists.',
+                status: Response::HTTP_CONFLICT,
+            );
+        });
+    }
+
+    private function handleDomain(Exceptions $exceptions): void
+    {
+        $exceptions->render(function (DomainException $exception, Request $request) {
+            if (! $this->isApiRequest($request)) {
+                return null;
+            }
+
+            return ApiResponse::error(
+                message: $exception->getMessage(),
+                status: Response::HTTP_UNPROCESSABLE_ENTITY,
             );
         });
     }

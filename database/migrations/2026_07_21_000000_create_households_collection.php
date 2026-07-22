@@ -9,17 +9,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::connection('mongodb')->create('households', function (Blueprint $collection): void {
-            $collection->unique(
-                ['block', 'no'],
-                'households_block_no_unique',
-                options: [
-                    'partialFilterExpression' => [
-                        'block' => ['$type' => 'string'],
-                        'no' => ['$type' => 'string'],
-                    ],
+            $collection->index('owner_name', 'households_owner_name_index');
+            $collection->index(['block', 'no'], 'households_block_no_index');
+            $collection->jsonSchema([
+                'bsonType' => 'object',
+                'required' => ['owner_name', 'address', 'created_at', 'updated_at'],
+                'properties' => [
+                    '_id' => ['bsonType' => 'objectId'],
+                    'owner_name' => ['bsonType' => 'string'],
+                    'address' => ['bsonType' => 'string'],
+                    'block' => ['bsonType' => ['string', 'null']],
+                    'no' => ['bsonType' => ['string', 'null']],
+                    'created_at' => ['bsonType' => 'date'],
+                    'updated_at' => ['bsonType' => 'date'],
                 ],
-            );
-            $collection->index('created_at', 'households_created_at_index');
+            ]);
         });
     }
 
