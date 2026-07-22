@@ -3,19 +3,23 @@
 namespace App\Services;
 
 use App\Contract\Repositories\HouseholdRepositoryInterface;
+use App\Contract\Repositories\PaymentRepositoryInterface;
 use App\Contract\Repositories\WasteRepositoryInterface;
+use App\Enums\PaymentStatus;
 use App\Enums\WasteStatus;
 use App\Enums\WasteType;
 use App\Models\Waste;
 use DomainException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
+use MongoDB\BSON\ObjectId;
 
 class WasteService
 {
     public function __construct(
         private WasteRepositoryInterface $wasteRepository,
         private HouseholdRepositoryInterface $householdRepository,
+        private PaymentRepositoryInterface $paymentRepository,
     ) {}
 
     public function paginate(array $request = []): LengthAwarePaginator
@@ -34,7 +38,17 @@ class WasteService
 
     public function create(array $request): Waste
     {
-        $this->householdRepository->findOrFail($request['household_id']);
+
+        $unpaidPayment = $this->paymentRepository->findByFilters([
+            'household_id' => $request['household_id'] ? new ObjectId($request['household_id']) : null,
+            'status' => PaymentStatus::Pending->value,
+        ]);
+
+        if ($unpaidPayment !== null) {
+            throw new DomainException(
+                'Cannot create a waste pickup because the household has an unpaid payment.'
+            );
+        }
 
         $payload = Arr::only($request, (new Waste)->getFillable());
         $payload['pickup_date'] = null;
