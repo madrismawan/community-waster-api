@@ -3,85 +3,49 @@
 namespace App\Services;
 
 use App\Contract\Repositories\HouseholdRepositoryInterface;
+use App\Models\Household;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Illuminate\Support\Arr;
 
 class HouseholdService
 {
-    public function __construct(private HouseholdRepositoryInterface $households) {}
+    public function __construct(private HouseholdRepositoryInterface $householdRepo) {}
 
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    public function paginate(array $request = []): LengthAwarePaginator
     {
-        return $this->households->paginate($perPage);
+        $perPage = (int) ($request['per_page'] ?? 15);
+        $page = (int) ($request['page'] ?? 1);
+
+        return $this->householdRepo->paginateFiltered($perPage, $request, $page);
     }
 
-    public function find(string $id): Model
+    public function find(string $id): Household
     {
-        return $this->households->findOrFail($id);
+        return $this->householdRepo->findOrFail($id);
     }
 
-    public function create(array $attributes): Model
+    public function create(array $request): Household
     {
-        $attributes = $this->normalize($attributes);
-        $this->ensureLocationIsAvailable(
-            $attributes['block'] ?? null,
-            $attributes['no'] ?? null,
-        );
+        $payload = $this->payload($request);
 
-        return $this->households->create($attributes);
+        return $this->householdRepo->create($payload);
     }
 
-    public function update(string $id, array $attributes): Model
+    public function update(string $id, array $request): Household
     {
         $household = $this->find($id);
-        $attributes = $this->normalize($attributes);
-        $block = array_key_exists('block', $attributes)
-            ? $attributes['block']
-            : $household->getAttribute('block');
-        $number = array_key_exists('no', $attributes)
-            ? $attributes['no']
-            : $household->getAttribute('no');
+        $payload = $this->payload($request);
 
-        $this->ensureLocationIsAvailable($block, $number, (string) $household->getKey());
-
-        return $this->households->update($household, $attributes);
+        return $this->householdRepo->update($household, $payload);
     }
 
     public function delete(string $id): void
     {
-        $this->households->delete($this->find($id));
+        $this->householdRepo->delete($this->find($id));
     }
 
-    /**
-     * @param  array<string, mixed>  $attributes
-     * @return array<string, mixed>
-     */
-    private function normalize(array $attributes): array
+    private function payload(array $request): array
     {
-        foreach (['owner_name', 'address', 'block', 'no'] as $field) {
-            if (array_key_exists($field, $attributes) && is_string($attributes[$field])) {
-                $attributes[$field] = trim($attributes[$field]);
-            }
-        }
-
-        if (isset($attributes['block'])) {
-            $attributes['block'] = mb_strtoupper($attributes['block']);
-        }
-
-        return $attributes;
-    }
-
-    private function ensureLocationIsAvailable(?string $block, ?string $number, ?string $exceptId = null): void
-    {
-        if ($block === null || $number === null) {
-            return;
-        }
-
-        if ($this->households->locationExists($block, $number, $exceptId)) {
-            throw new ConflictHttpException(
-                'A household with the same block and house number already exists.',
-            );
-        }
+        return Arr::only($request, (new Household)->getFillable());
     }
 }

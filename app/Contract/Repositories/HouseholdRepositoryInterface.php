@@ -2,7 +2,19 @@
 
 namespace App\Contract\Repositories;
 
+use App\Models\Household;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
+/** @extends BaseRepositoryInterface<Household> */
 interface HouseholdRepositoryInterface extends BaseRepositoryInterface
 {
-    public function locationExists(string $block, string $number, ?string $exceptId = null): bool;
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return LengthAwarePaginator<int, Household>
+     */
+    public function paginateFiltered(
+        int $perPage = 15,
+        array $filters = [],
+        int $page = 1,
+    ): LengthAwarePaginator;
 }

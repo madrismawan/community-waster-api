@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Api\HouseholdController;
+use App\Http\Controllers\Api\PickupController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('households', [HouseholdController::class, 'index']);
-Route::post('households', [HouseholdController::class, 'store']);
-Route::get('households/{household}', [HouseholdController::class, 'show']);
-Route::patch('households/{household}', [HouseholdController::class, 'update']);
-Route::delete('households/{household}', [HouseholdController::class, 'destroy']);
+Route::prefix('households')->group(function () {
+    Route::get('/', [HouseholdController::class, 'index']);
+    Route::post('/', [HouseholdController::class, 'store']);
+    Route::get('{id}', [HouseholdController::class, 'show']);
+    Route::put('{id}', [HouseholdController::class, 'update']);
+    Route::delete('{id}', [HouseholdController::class, 'destroy']);
+});
