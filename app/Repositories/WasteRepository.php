@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Contract\Repositories\WasteRepositoryInterface;
 use App\Enums\WasteStatus;
-use App\Enums\WasteType;
+use App\Factories\WasteFactory;
 use App\Models\Waste;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,9 +13,34 @@ use MongoDB\BSON\ObjectId;
 /** @extends BaseRepository<Waste> */
 class WasteRepository extends BaseRepository implements WasteRepositoryInterface
 {
-    public function __construct(Waste $waste)
-    {
+    public function __construct(
+        Waste $waste,
+        private WasteFactory $wasteFactory,
+    ) {
         parent::__construct($waste);
+    }
+
+    public function create(array $attributes): Waste
+    {
+        $waste = $this->wasteFactory->make($attributes);
+        $waste->save();
+
+        return $waste;
+    }
+
+    public function findOrFail(string $id): Waste
+    {
+        /** @var Waste $waste */
+        $waste = parent::findOrFail($id);
+
+        return $this->wasteFactory->hydrate($waste);
+    }
+
+    public function save(Waste $waste): Waste
+    {
+        $waste->save();
+
+        return $waste->refresh();
     }
 
     public function paginateFiltered(
@@ -23,9 +48,15 @@ class WasteRepository extends BaseRepository implements WasteRepositoryInterface
         array $filters = [],
         int $page = 1,
     ): LengthAwarePaginator {
-        return $this->applyFilters(Waste::query(), $filters)
+        $paginator = $this->applyFilters(Waste::query(), $filters)
             ->latest('created_at')
             ->paginate($perPage, ['*'], 'page', $page);
+
+        $paginator->setCollection(
+            $paginator->getCollection()->map($this->wasteFactory->hydrate(...)),
+        );
+
+        return $paginator;
     }
 
     private function applyFilters(Builder $query, array $filters): Builder

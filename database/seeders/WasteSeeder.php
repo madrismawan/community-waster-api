@@ -4,14 +4,14 @@ namespace Database\Seeders;
 
 use App\Enums\WasteStatus;
 use App\Enums\WasteType;
+use App\Factories\WasteFactory;
 use App\Models\Household;
-use App\Models\Waste;
 use Illuminate\Database\Seeder;
 use RuntimeException;
 
 class WasteSeeder extends Seeder
 {
-    public function run(): void
+    public function run(WasteFactory $wasteFactory): void
     {
         $households = Household::query()->get();
 
@@ -39,9 +39,8 @@ class WasteSeeder extends Seeder
             ],
             [
                 'type' => WasteType::Electronic,
-                'status' => WasteStatus::Scheduled,
-                'pickup_date' => now()->addDays(2),
-                'safety_check' => true,
+                'status' => WasteStatus::Pending,
+                'pickup_date' => null,
             ],
             [
                 'type' => WasteType::Organic,
@@ -51,14 +50,8 @@ class WasteSeeder extends Seeder
         ];
 
         foreach ($households as $index => $household) {
-            $attributes = $wastes[$index];
-            $type = $attributes['type'];
-
-            unset($attributes['type']);
-
-            $waste = new Waste($attributes);
+            $waste = $wasteFactory->make($wastes[$index]);
             $waste->household()->associate($household);
-            $waste->type = $type;
             $waste->save();
         }
     }

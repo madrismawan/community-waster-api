@@ -19,7 +19,6 @@ class StorePickupRequest extends FormRequest
         return [
             'household_id' => ['required', 'string', 'exists:households,_id'],
             'type' => ['required', Rule::enum(WasteType::class)],
-            'safety_check' => ['sometimes', 'boolean'],
         ];
     }
 }

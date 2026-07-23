@@ -8,6 +8,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 /** @extends BaseRepositoryInterface<Waste> */
 interface WasteRepositoryInterface extends BaseRepositoryInterface
 {
+    public function save(Waste $waste): Waste;
+
     /**
      * @param  array<string, mixed>  $filters
      * @return LengthAwarePaginator<int, Waste>

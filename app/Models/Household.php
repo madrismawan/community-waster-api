@@ -13,11 +13,6 @@ class Household extends Model
 
     protected $collection = 'households';
 
-    public function wastes(): HasMany
-    {
-        return $this->hasMany(Waste::class);
-    }
-
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
