@@ -7,6 +7,8 @@ use DomainException;
 
 class WasteElectronic extends Waste
 {
+    protected string $paymentAmount = '100000.00';
+
     public static function discriminator(): WasteType
     {
         return WasteType::Electronic;
@@ -19,5 +21,6 @@ class WasteElectronic extends Waste
         }
 
         parent::schedule($pickupDate, $safetyCheck);
+        $this->safety_check = true;
     }
 }

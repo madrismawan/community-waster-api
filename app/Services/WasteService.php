@@ -69,8 +69,16 @@ class WasteService
         $waste = $this->find($id);
 
         $waste->complete();
+        $waste = $this->wasteRepository->save($waste);
 
-        return $this->wasteRepository->save($waste);
+        $this->paymentRepository->create([
+            'household_id' => new ObjectId((string) $waste->household_id),
+            'amount' => $waste->paymentAmount(),
+            'payment_date' => now()->addWeek(),
+            'status' => PaymentStatus::Pending,
+        ]);
+
+        return $waste;
     }
 
     public function cancel(string $id): Waste

@@ -18,6 +18,8 @@ class Waste extends Model implements WasteLifecycleInterface
 
     protected $table = 'wastes';
 
+    protected string $paymentAmount;
+
     protected function casts(): array
     {
         return [
@@ -39,6 +41,11 @@ class Waste extends Model implements WasteLifecycleInterface
     public static function discriminator(): ?WasteType
     {
         return null;
+    }
+
+    public function paymentAmount(): string
+    {
+        return $this->paymentAmount;
     }
 
     public function schedule(string $pickupDate, ?bool $safetyCheck = null): void
