@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contract\Repositories\WasteRepositoryInterface;
 use App\Enums\WasteStatus;
+use App\Enums\WasteType;
 use App\Factories\WasteFactory;
 use App\Models\Waste;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

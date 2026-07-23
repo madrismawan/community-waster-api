@@ -19,6 +19,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_KEY" value="base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" force="true"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
         <env name="BCRYPT_ROUNDS" value="4" force="true"/>
         <env name="BROADCAST_CONNECTION" value="null" force="true"/>
@@ -30,16 +31,19 @@
         <env name="MAIL_MAILER" value="array" force="true"/>
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
+        <env name="JWT_SECRET" value="test-jwt-secret-test-jwt-secret-test-jwt-secret-test-jwt-secret" force="true"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <!-- Docker Compose exports .env values into $_SERVER; force test isolation there too. -->
         <server name="APP_ENV" value="testing" force="true"/>
+        <server name="APP_KEY" value="base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" force="true"/>
         <server name="CACHE_STORE" value="array" force="true"/>
         <server name="DB_CONNECTION" value="mongodb" force="true"/>
         <server name="DB_DATABASE" value="community_waste_test" force="true"/>
         <server name="DB_URI" value="mongodb://admin:password@mongodb:27017/community_waste_test?authSource=admin" force="true"/>
         <server name="QUEUE_CONNECTION" value="sync" force="true"/>
         <server name="SESSION_DRIVER" value="array" force="true"/>
+        <server name="JWT_SECRET" value="test-jwt-secret-test-jwt-secret-test-jwt-secret-test-jwt-secret" force="true"/>
     </php>
 </phpunit>

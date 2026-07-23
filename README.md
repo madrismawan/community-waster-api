@@ -91,6 +91,23 @@ Email    : admin@example.com
 Password : password
 ```
 
+## Menjalankan Test
+
+Jalankan seluruh Feature dan Unit test dengan Pest dari container aplikasi:
+
+```bash
+docker compose exec app composer test
+```
+
+Atau jalankan suite tertentu:
+
+```bash
+docker compose exec app php artisan test tests/Feature
+docker compose exec app php artisan test tests/Unit/Services
+```
+
+Feature test menggunakan database MongoDB `community_waste_test` yang dikonfigurasi di `phpunit.xml`. Database ini akan di-reset otomatis selama pengujian; pengujian akan dihentikan jika nama database yang aktif berbeda agar data aplikasi tidak terhapus. Jalankan test secara serial dan jangan gunakan opsi `--parallel` karena seluruh worker akan memakai database test yang sama.
+
 ## Format Response
 
 ```json

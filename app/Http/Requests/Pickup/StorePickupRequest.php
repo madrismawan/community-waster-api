@@ -17,7 +17,11 @@ class StorePickupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'household_id' => ['required', 'string', 'exists:households,_id'],
+            'household_id' => [
+                'required',
+                'string',
+                Rule::exists('households', '_id')->whereNull('deleted_at'),
+            ],
             'type' => ['required', Rule::enum(WasteType::class)],
         ];
     }
