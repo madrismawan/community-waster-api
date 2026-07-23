@@ -68,4 +68,12 @@ class HouseholdController extends Controller
 
         return $this->success(message: 'Household deleted successfully.');
     }
+
+    public function restore(string $id): JsonResponse
+    {
+        return $this->success(
+            data: new HouseholdResource($this->householdService->restore($id)),
+            message: 'Household restored successfully.',
+        );
+    }
 }

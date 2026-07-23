@@ -18,6 +18,23 @@ class HouseholdRepository extends BaseRepository implements HouseholdRepositoryI
         parent::__construct($household);
     }
 
+    public function findTrashedOrFail(string $id): Household
+    {
+        /** @var Household $household */
+        $household = $this->model->newQuery()
+            ->onlyTrashed()
+            ->findOrFail($id);
+
+        return $household;
+    }
+
+    public function restore(Household $household): Household
+    {
+        $household->restore();
+
+        return $household->refresh();
+    }
+
     public function paginateFiltered(
         int $perPage = 15,
         array $filters = [],

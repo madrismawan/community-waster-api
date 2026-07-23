@@ -44,6 +44,13 @@ class HouseholdService
         $this->householdRepo->delete($this->find($id));
     }
 
+    public function restore(string $id): Household
+    {
+        $household = $this->householdRepo->findTrashedOrFail($id);
+
+        return $this->householdRepo->restore($household);
+    }
+
     private function payload(array $request): array
     {
         return Arr::only($request, (new Household)->getFillable());

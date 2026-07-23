@@ -12,6 +12,7 @@ Route::prefix('households')->group(function () {
     Route::get('{id}', [HouseholdController::class, 'show']);
     Route::put('{id}', [HouseholdController::class, 'update']);
     Route::delete('{id}', [HouseholdController::class, 'destroy']);
+    Route::put('{id}/restore', [HouseholdController::class, 'restore']);
 });
 
 Route::prefix('pickups')->group(function () {

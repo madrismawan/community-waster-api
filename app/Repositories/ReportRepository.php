@@ -131,7 +131,12 @@ class ReportRepository implements ReportRepositoryInterface
 
         $results = $this->household->newQuery()->raw(
             fn (MongoCollection $collection): array => $collection->aggregate([
-                ['$match' => ['_id' => new ObjectId($householdId)]],
+                [
+                    '$match' => [
+                        '_id' => new ObjectId($householdId),
+                        'deleted_at' => null,
+                    ],
+                ],
                 [
                     '$lookup' => [
                         'from' => 'wastes',
