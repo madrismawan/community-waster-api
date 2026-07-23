@@ -7,6 +7,7 @@ use App\Enums\WasteStatus;
 use App\Enums\WasteType;
 use App\Factories\WasteFactory;
 use App\Models\Waste;
+use DateTimeInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use MongoDB\BSON\ObjectId;
@@ -42,6 +43,19 @@ class WasteRepository extends BaseRepository implements WasteRepositoryInterface
         $waste->save();
 
         return $waste->refresh();
+    }
+
+    public function cancelOverdueOrganicPickups(DateTimeInterface $cutoff): int
+    {
+        return Waste::query()
+            ->where('type', WasteType::Organic->value)
+            ->where('status', WasteStatus::Scheduled->value)
+            ->whereNotNull('pickup_date')
+            ->where('pickup_date', '<=', $cutoff)
+            ->update([
+                'status' => WasteStatus::Canceled->value,
+                'updated_at' => now(),
+            ]);
     }
 
     public function paginateFiltered(
