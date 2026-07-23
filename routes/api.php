@@ -1,10 +1,21 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HouseholdController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PickupController;
 use App\Http\Controllers\Api\ReportController;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+
+    Route::middleware('auth:api')->group(function () {
+        Route::get('me', [AuthController::class, 'me']);
+        Route::post('logout', [AuthController::class, 'logout']);
+    });
+});
 
 Route::prefix('households')->group(function () {
     Route::get('/', [HouseholdController::class, 'index']);
@@ -15,7 +26,7 @@ Route::prefix('households')->group(function () {
     Route::put('{id}/restore', [HouseholdController::class, 'restore']);
 });
 
-Route::prefix('pickups')->group(function () {
+Route::middleware('auth:api')->prefix('pickups')->group(function () {
     Route::get('/', [PickupController::class, 'index']);
     Route::post('/', [PickupController::class, 'store']);
     Route::put('{id}/schedule', [PickupController::class, 'schedule']);
@@ -23,7 +34,7 @@ Route::prefix('pickups')->group(function () {
     Route::put('{id}/cancel', [PickupController::class, 'cancel']);
 });
 
-Route::prefix('payments')->group(function () {
+Route::middleware('auth:api')->prefix('payments')->group(function () {
     Route::get('/', [PaymentController::class, 'index']);
     Route::post('/', [PaymentController::class, 'store']);
     Route::put('{id}/confirm', [PaymentController::class, 'confirm']);

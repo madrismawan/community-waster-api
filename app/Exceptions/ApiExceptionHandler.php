@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 final class ApiExceptionHandler
 {
@@ -32,6 +33,7 @@ final class ApiExceptionHandler
 
         $handler->handleValidation($exceptions);
         $handler->handleAuthentication($exceptions);
+        $handler->handleJwt($exceptions);
         $handler->handleAccessDenied($exceptions);
         $handler->handleNotFound($exceptions);
         $handler->handleTooManyRequests($exceptions);
@@ -66,6 +68,20 @@ final class ApiExceptionHandler
 
             return $this->error(
                 message: $exception->getMessage() ?: 'Unauthenticated.',
+                status: Response::HTTP_UNAUTHORIZED,
+            );
+        });
+    }
+
+    private function handleJwt(Exceptions $exceptions): void
+    {
+        $exceptions->render(function (JWTException $exception, Request $request) {
+            if (! $this->isApiRequest($request)) {
+                return null;
+            }
+
+            return $this->error(
+                message: 'Invalid or expired token.',
                 status: Response::HTTP_UNAUTHORIZED,
             );
         });
