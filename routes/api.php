@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\HouseholdController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PickupController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,10 @@ Route::prefix('pickups')->group(function () {
     Route::put('{id}/schedule', [PickupController::class, 'schedule']);
     Route::put('{id}/complete', [PickupController::class, 'complete']);
     Route::put('{id}/cancel', [PickupController::class, 'cancel']);
+});
+
+Route::prefix('payments')->group(function () {
+    Route::get('/', [PaymentController::class, 'index']);
+    Route::post('/', [PaymentController::class, 'store']);
+    Route::put('{id}/confirm', [PaymentController::class, 'confirm']);
 });
